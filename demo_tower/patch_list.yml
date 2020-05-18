@@ -1,0 +1,7 @@
+potential_patches:
+ - patch_num: client-tools-201502-100
+   channelLabel: rhel-x86_64-server
+ - patch_num: client-tools-201506-12011
+   channelLabel: rhel-x86_64-server
+ - patch_num: client-tools-201604-12519
+   channelLabel: rhel-x86_64-server

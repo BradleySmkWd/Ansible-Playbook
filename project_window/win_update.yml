@@ -1,0 +1,10 @@
+---
+- name: window update
+  hosts: all
+  tasks:
+   - name: Install all security, critical, and rollup updates without a scheduled task
+     win_updates:
+       category_names:
+        - CriticalUpdates
+       log_path: C:\WSUS\ansible_log.txt
+       server_selection: managed_server 

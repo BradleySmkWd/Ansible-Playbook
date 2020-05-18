@@ -1,0 +1,17 @@
+---
+el_dependencies:
+  - python3-psycopg2
+  - python3-setuptools
+  - python3-libselinux
+  - python3-setools
+  - dnf-utils
+  - sudo
+  - acl
+
+dnf_modules:
+  - 'nginx:1.14'
+  - 'postgresql:9.6'
+
+postgresql_packages:
+  - postgresql-server
+  - postgresql-contrib

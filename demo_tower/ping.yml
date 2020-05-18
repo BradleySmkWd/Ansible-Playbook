@@ -1,0 +1,6 @@
+---
+ - name: Test the network connection through ping
+   hosts: all
+   tasks:
+    - name: ping the server
+      ping:

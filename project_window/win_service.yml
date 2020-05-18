@@ -1,0 +1,14 @@
+---
+- name: Managing window service
+  hosts: all
+  tasks:
+   - name: Set service startup mode to auto and ensure it is started
+     win_service:
+       name: "{{item}}"
+       start_mode: manual
+       state: stopped
+     with_items:
+       - WSearch
+       - WMSVC
+       - wmiApSrv
+

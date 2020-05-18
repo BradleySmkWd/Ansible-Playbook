@@ -1,0 +1,30 @@
+- hosts: localhost
+  tasks:
+  - name: Try to login to OCP cluster
+    k8s_auth:
+      host: https://api.ocp4.systex4.local:6443
+      username: kubeadmin
+      password: fzfuA-R3Rxu-FswtC-RavuL
+      validate_certs: no
+    register: k8s_auth_result
+  - name: debug
+    debug: 
+      msg: '{{k8s_auth_result}}'
+  - name: Scale deployment up, and extend timeout
+    k8s_scale:
+      host: https://api.ocp4.systex4.local:6443
+      username: kubeadmin
+      api_key: "{{ k8s_auth_result.k8s_auth.api_key }}"
+      validate_certs: no
+      api_version: apps/v1
+      kind: Deployment
+      name: hello-openshift
+      namespace: bradtest
+      current_replicas: 3
+      replicas: 2
+      resource_version: '16674000'
+    register: scale_info
+
+  - name: debug
+    debug:
+      msg: "{{scale_info}}"

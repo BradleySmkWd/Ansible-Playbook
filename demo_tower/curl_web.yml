@@ -1,0 +1,11 @@
+---
+- name:  check connection to a web page
+  hosts: all 
+  tasks:
+   - name: Check that you can connect (GET) to a page
+     uri:
+      url: http://192.168.141.2:8080
+   - name: Download the index.html from web
+     get_url:
+      url: http://192.168.141.2:8080
+      dest: /root

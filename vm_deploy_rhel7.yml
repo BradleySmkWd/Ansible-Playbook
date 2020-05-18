@@ -1,0 +1,48 @@
+---
+- name: Guest Creation
+  gather_facts: no
+  vars_files:
+    - vm_vcenter_vars_en.yml
+  hosts: localhost
+  tasks:
+    - name: Clone a virtual machine "{{ vm_name }}" from existing template "{{ rhel75_template_name }}"
+      vmware_guest:
+        name: "{{ vm_name }}"
+        template: "{{ rhel75_template_name }}"
+        hostname: "{{ vcenter_server }}"
+        username: "{{ vcenter_user }}"
+        password: "{{ vcenter_pass }}"
+        validate_certs: no
+        folder: "{{ folder }}"
+        datacenter: "{{ datacenter }}"
+        networks:
+          - name: "{{ network }}"
+            device_type: vmxnet3
+            type: static
+            ip: "{{ vm_ip }}"
+            netmask: "{{ networkmask }}"
+            gateway: "{{ gateway }}"
+        esxi_hostname: "{{ esxi_hostname }}"
+        customization:
+          dns_servers: "{{ dns_server }}"
+        wait_for_ip_address: yes
+      delegate_to: localhost
+      register: vm_result
+ 
+    - name: Print the New VM ip info
+      debug:
+        msg: "{{ vm_ip }}"
+
+    - name: Add host into tower
+      tower_host:
+        name: "{{ vm_ip }}"
+        inventory: "rhel-7-7-ansible"
+        tower_username: "{{ ansibleuser }}"
+        tower_password: "{{ ansiblepass }}"
+        tower_host: "{{ ansibletower }}"
+        tower_verify_ssl: no
+
+    - name: Assert that VM is created
+      assert:
+        that:
+          - "vm_result.changed"

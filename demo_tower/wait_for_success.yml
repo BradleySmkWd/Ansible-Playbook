@@ -1,0 +1,9 @@
+---
+- name:  check port 8080
+  hosts: all
+  tasks:
+   - name: Wait for port 8080 to become open on the host, don't start checking for 5 seconds and timeout in 10 seconds
+     wait_for:
+      port: 8080
+      delay: 5
+      timeout: 10

@@ -1,0 +1,13 @@
+---
+- name: execute install script
+  hosts: all
+  vars_files:
+   - patch_list.yml
+  tasks:
+   - name: call
+     script: 
+       cmd: suse.py "{{item.patch_num}}" "{{item.channelLabel}}"
+     register: opt
+     loop: "{{potential_patches}}"
+   - debug: 
+       msg: "{{opt}}"

@@ -1,0 +1,73 @@
+- hosts: localhost
+  tasks:
+  - name: Try to login to OCP cluster
+    k8s_auth:
+      host: https://192.168.134.118:8443
+      validate_certs: no
+      username: minikube
+      password: root
+      api_key: "MIIEowIBAAKCAQEAnYtOuLdBROEjaISaqIeuPiIMYFANbHR8A/MQYU9nzB49nt63T88Ed2ziuvPNVtRf60KszFNP/E3waVfkU/HZ6UHy0NK5rFR3cvcs/Hd16VtlIRFIiUwaAUJj2YsiwRtMcRjtsCr33vwn/L1DF1VGbjDvGu8CPqQQWwbOlMKzwuKpajMx5iy62epco/zDWE0wfyF+HUPTQAe5iOTpDH3BTYZVAsZYw7VPbkxq0iBNL1ljAc5MvzUKz3TJyA4wumw8nhhE9+udmAYG80dkAkvsoRH+ytPAyGRb8jc4daDR450NIbgtGt0zq0aemIqvnU5N3KL+mt0a9i3zPeQpYbhD5QIDAQABAoIBAGdCZo+FdV87HWUk/OWXQKpy0J/T+GhslNhV2Ree3w6Xh5X4rje+HVRVZupYX+8YdeISKoYl2Rgq0XeKZxpqO4S6d/dNFuuP1VbiEXdMqVkRUWByHpP28FiA9kcg/d+KD/lU+H1uPFbH+UGbnzzM5MPWiPGjVFpQWHQBKyev0fjaZhZW67tfwHQgX7NaaPirsgb7+s/2wZ+KqfX9dJhQKLQOqhc/n6sJqAYr6xwBSJ0Gr7K5woIPwvnvCHc+FpNSuaxkdWg/AX7HMsQFTjsvhkIawXFPCG8XIDLwUYtb3WvvItv6f1jalEYRkCmRRySBMV8ciFUI+yQq3UQ0cCfhPAECgYEAzNuieFeU1ZpyqjyI/JT4c95cIt5hzjxoLum6csCndOe769aJl4XWazFvZfHuLnIHBcjlPxYijT/Qj1u7SjAagpaF2rGJ1BYmP91GFzLCk+9WeUTFAkarOkbxBmkrjBbOR318w4nlSWREOAEoPOgO5LJ/mSMtVLfcXI21D1YptQECgYEAxN/fslyi06AwYL1X2OLUg+Ad5ro1xik+yEh6q6k3LfvdxGMM9VZw0Ke1q9gI2eu14BVgMV3AabSCIVfNGxWykn33kJX3N4To0kDQOF8yeAnmjbGuESlTP5AJAQ5BaA7HTkR+MGwesDhHJRHAwzB+KVcQMQTAXwUlo5cyVfHHWuUCgYAyPdeN3iTxciyXFbue/sYkXK+KGbIxC12dy9LfW+J16HONNpOOJtPcfEZO4VPB7lNMluWqYDpfG/yBfETlwABwcIwpg4tDCZ+d4B3ViKxx7avul/AdS8moxEdOhDKa6+jxXZRgvIwQQNf+SEJfFaa5bhGfNCJk+abAyDxUo5QdAQKBgQC9YeorBoevcaH3/Uv7G8B4l2fMIoZF+DknqukuJlopRua+2tWFT8C4RwwwoWFqWB8dzxI4isnkJTsk3fQ0wLuFxd0W3dvxMU5Rqv1hrNm8tTFuTmR2p70oIOM4e8EZW1YICUUmSWt/8rMlip1WZliGZfTyYnK3NRlO88v89tbhrQKBgDQLPzXlT7yUbsrZ8WyXNfFOQW57I3xpG97RkWC2MDOKmpIf8lBSbN8ACH0qKGWgd3WGlZy8gEMe9xA6YIOp9eyAguWNMxXEQ1302hTj/40jLolRvMNxIzbUGsMoeudg2eH3ptZgU5qUFBiFplksApG+LNKbtiawAb5evheJdXUI" 
+    register: k8s_auth_result
+  - name: debug
+    debug: 
+      msg: '{{k8s_auth_result}}'
+  - name: deploy hello-world pod
+    k8s:
+      state: present
+      namespace: development
+      host: https://192.168.134.118:8443 
+      username: minikube
+      api_key: "MIIEowIBAAKCAQEAnYtOuLdBROEjaISaqIeuPiIMYFANbHR8A/MQYU9nzB49nt63T88Ed2ziuvPNVtRf60KszFNP/E3waVfkU/HZ6UHy0NK5rFR3cvcs/Hd16VtlIRFIiUwaAUJj2YsiwRtMcRjtsCr33vwn/L1DF1VGbjDvGu8CPqQQWwbOlMKzwuKpajMx5iy62epco/zDWE0wfyF+HUPTQAe5iOTpDH3BTYZVAsZYw7VPbkxq0iBNL1ljAc5MvzUKz3TJyA4wumw8nhhE9+udmAYG80dkAkvsoRH+ytPAyGRb8jc4daDR450NIbgtGt0zq0aemIqvnU5N3KL+mt0a9i3zPeQpYbhD5QIDAQABAoIBAGdCZo+FdV87HWUk/OWXQKpy0J/T+GhslNhV2Ree3w6Xh5X4rje+HVRVZupYX+8YdeISKoYl2Rgq0XeKZxpqO4S6d/dNFuuP1VbiEXdMqVkRUWByHpP28FiA9kcg/d+KD/lU+H1uPFbH+UGbnzzM5MPWiPGjVFpQWHQBKyev0fjaZhZW67tfwHQgX7NaaPirsgb7+s/2wZ+KqfX9dJhQKLQOqhc/n6sJqAYr6xwBSJ0Gr7K5woIPwvnvCHc+FpNSuaxkdWg/AX7HMsQFTjsvhkIawXFPCG8XIDLwUYtb3WvvItv6f1jalEYRkCmRRySBMV8ciFUI+yQq3UQ0cCfhPAECgYEAzNuieFeU1ZpyqjyI/JT4c95cIt5hzjxoLum6csCndOe769aJl4XWazFvZfHuLnIHBcjlPxYijT/Qj1u7SjAagpaF2rGJ1BYmP91GFzLCk+9WeUTFAkarOkbxBmkrjBbOR318w4nlSWREOAEoPOgO5LJ/mSMtVLfcXI21D1YptQECgYEAxN/fslyi06AwYL1X2OLUg+Ad5ro1xik+yEh6q6k3LfvdxGMM9VZw0Ke1q9gI2eu14BVgMV3AabSCIVfNGxWykn33kJX3N4To0kDQOF8yeAnmjbGuESlTP5AJAQ5BaA7HTkR+MGwesDhHJRHAwzB+KVcQMQTAXwUlo5cyVfHHWuUCgYAyPdeN3iTxciyXFbue/sYkXK+KGbIxC12dy9LfW+J16HONNpOOJtPcfEZO4VPB7lNMluWqYDpfG/yBfETlwABwcIwpg4tDCZ+d4B3ViKxx7avul/AdS8moxEdOhDKa6+jxXZRgvIwQQNf+SEJfFaa5bhGfNCJk+abAyDxUo5QdAQKBgQC9YeorBoevcaH3/Uv7G8B4l2fMIoZF+DknqukuJlopRua+2tWFT8C4RwwwoWFqWB8dzxI4isnkJTsk3fQ0wLuFxd0W3dvxMU5Rqv1hrNm8tTFuTmR2p70oIOM4e8EZW1YICUUmSWt/8rMlip1WZliGZfTyYnK3NRlO88v89tbhrQKBgDQLPzXlT7yUbsrZ8WyXNfFOQW57I3xpG97RkWC2MDOKmpIf8lBSbN8ACH0qKGWgd3WGlZy8gEMe9xA6YIOp9eyAguWNMxXEQ1302hTj/40jLolRvMNxIzbUGsMoeudg2eH3ptZgU5qUFBiFplksApG+LNKbtiawAb5evheJdXUI"
+      validate_certs: no
+      resource_definition:
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+          name: hello-openshift
+          labels:
+            name: hello-openshift
+        spec:
+          selector:
+            matchLabels:
+              app: hello-openshift
+          replicas: 1
+          template:
+            metadata:
+              labels:
+                app: hello-openshift
+            spec:
+              containers:
+              - name: hello-openshift
+                image: openshift/hello-openshift
+                ports:
+                - containerPort: 8080
+                  protocol: TCP
+                resources:
+                  requests:
+                    cpu: 300m
+                    memory: 64Mi
+                  limits:
+                    cpu: 600m
+                    memory: 128Mi
+
+#  - name: Scale deployment up, and extend timeout
+#    k8s_scale:
+#      host: https://api.ocp4.systex4.local:6443
+#      username: kubeadmin
+#      api_key: "{{ k8s_auth_result.k8s_auth.api_key }}"
+#      api_version: apps/v1
+#      namespace: bradtest
+#      host: https://api.ocp4.systex4.local:6443
+#      kind: ReplicaSet
+#      name: hello-openshift-5b97449874
+#      replicas: 3
+#      validate_certs: no
+#      resource_version: '7034679'
+#      wait: yes
+#      wait_timeout:  600
+#    register: scale_info
+
+#  - name: debug
+#    debug:
+#      msg: "{{scale_info}}"
+

@@ -1,0 +1,6 @@
+---
+- hosts: localhost
+  gather_facts: no
+  roles:
+   - { role: jsm84.mongodb, mongodb_user: exampleusr, mongodb_password: examplepasswd, mongodb_database: exampledb, mongodb_admin_password: exampleadminpasswd, memory_limit: 1024Mi }
+

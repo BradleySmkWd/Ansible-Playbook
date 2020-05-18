@@ -1,0 +1,75 @@
+- hosts: localhost
+  tasks:
+  - name: Try to login to OCP cluster
+    k8s_auth:
+      host: https://openshift-master.systex.local:8443/api
+      username: kevin
+      password: P@ssw0rd
+      validate_certs: no
+      state: present
+      api_key: EQXBuVpyu6Tz5is1VBPgwrZQezRu-d-uzX0ldwbqRkY
+    register: k8s_auth_result
+  - name: debug
+    debug: 
+      msg: '{{k8s_auth_result}}'
+
+  - name: deploy hello-world pod
+    k8s:
+      state: present
+      namespace: bradtest
+      host: https://openshift-master.systex.local:8443/
+      username: kevin
+      api_key: EQXBuVpyu6Tz5is1VBPgwrZQezRu-d-uzX0ldwbqRkY
+      validate_certs: no
+      resource_definition:
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+          name: hello-openshift
+          labels:
+            name: hello-openshift
+        spec:
+          selector:
+            matchLabels:
+              app: hello-openshift
+          replicas: 1
+          template:
+            metadata:
+              labels:
+                app: hello-openshift
+            spec:
+              containers:
+              - name: hello-openshift
+                image: openshift/hello-openshift
+                ports:
+                - containerPort: 8080
+                  protocol: TCP
+                resources:
+                  requests:
+                    cpu: 300m
+                    memory: 64Mi
+                  limits:
+                    cpu: 600m
+                    memory: 128Mi
+
+  - name: Scale deployment up, and extend timeout
+    k8s_scale:
+      host: https://openshift-master.systex.local:8443/
+      username: kevin
+      api_key: "{{ k8s_auth_result.k8s_auth.api_key }}"
+      api_version: apps/v1
+      namespace: bradtest
+      host: https://api.ocp4.systex4.local:6443
+      kind: ReplicaSet
+      name: hello-openshift-5b97449874
+      replicas: 3
+      validate_certs: no
+      resource_version: '7034679'
+      wait: yes
+      wait_timeout:  600
+    register: scale_info
+
+  - name: debug
+    debug:
+      msg: "{{scale_info}}"
+

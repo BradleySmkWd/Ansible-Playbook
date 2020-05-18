@@ -1,0 +1,9 @@
+---
+- include: install_deps.yml
+
+- include_tasks: install_tower.yml
+  when: packages_ubuntu_install_tower | bool
+
+- include_tasks: install_postgres.yml
+  when: packages_ubuntu_install_postgres | bool or config_dynamic_database == 'internal'
+

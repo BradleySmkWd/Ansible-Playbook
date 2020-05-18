@@ -1,0 +1,46 @@
+---
+- block:
+  - name: Copy temporary sql files
+    copy:
+      src: '{{ item }}'
+      dest: '{{ backup_dir.rstrip("/") }}/common/'
+    with_items:
+      - instance_group_map.sql
+      - instance_group_map_cleanup.sql
+
+  - name: Create (temporary) mapping between instance group ids / names
+    shell: "psql --host='{{ tower_db_settings.default.HOST }}' --port={{ tower_db_settings.default.PORT }} --username='{{ tower_db_settings.default.USER  }}' --dbname='{{ tower_db_settings.default.NAME }}' < instance_group_map.sql"
+    args:
+      chdir: '{{ backup_dir.rstrip("/") }}/common/'
+    environment:
+      PGPASSWORD: "{{ tower_db_settings.default.PASSWORD }}"
+    no_log: True
+
+  # clean drops the database
+  # create adds instructions to create the database
+  # Note: user needs access to postgres template when restoring
+  - name: Perform a PostgreSQL dump.
+    shell: "pg_dump --clean --create --host='{{ tower_db_settings.default.HOST }}' --port={{ tower_db_settings.default.PORT }} --username='{{ tower_db_settings.default.USER  }}' --dbname='{{ tower_db_settings.default.NAME }}' --exclude-table=main_instance --exclude-table=main_instancegroup --exclude-table=main_instancegroup_instances > tower.db"
+    args:
+      chdir: '{{ backup_dir.rstrip("/") }}/common/'
+    environment:
+      PGPASSWORD: "{{ tower_db_settings.default.PASSWORD }}"
+    no_log: True
+
+  - name: Remove mapping between instance group ids / names
+    shell: "psql --host='{{ tower_db_settings.default.HOST }}' --port={{ tower_db_settings.default.PORT }} --username='{{ tower_db_settings.default.USER  }}' --dbname='{{ tower_db_settings.default.NAME }}' < instance_group_map_cleanup.sql"
+    args:
+      chdir: '{{ backup_dir.rstrip("/") }}/common/'
+    environment:
+      PGPASSWORD: "{{ tower_db_settings.default.PASSWORD }}"
+    no_log: True
+
+  - name: Remove temporary sql files
+    file:
+      path: '{{ backup_dir.rstrip("/") }}/common/{{ item }}'
+      state: absent
+    with_items:
+      - instance_group_map.sql
+      - instance_group_map_cleanup.sql
+
+  when: inventory_hostname == groups['tower'][0]

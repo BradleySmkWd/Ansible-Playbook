@@ -1,0 +1,9 @@
+---
+- name: curl
+  hosts: all
+  tasks:
+   - name: Perform a GET and Store Output
+     win_uri:
+      url: http://192.168.141.12
+     register: http_output
+   - debug: var=http_output

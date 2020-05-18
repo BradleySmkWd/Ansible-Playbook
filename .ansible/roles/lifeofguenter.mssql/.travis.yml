@@ -1,0 +1,17 @@
+dist: xenial
+
+language: python
+python: 3.7
+sudo: required
+
+install:
+  - pip install ansible
+  - printf '[defaults]\nroles_path=../' >ansible.cfg
+
+script:
+  - "ansible-playbook tests/test.yml -i tests/inventory --connection=local"
+
+  - "ansible-playbook tests/test.yml -i tests/inventory --connection=local"
+
+notifications:
+  webhooks: https://galaxy.ansible.com/api/v1/notifications/

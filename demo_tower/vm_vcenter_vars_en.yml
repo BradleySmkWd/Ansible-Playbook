@@ -1,0 +1,19 @@
+---
+rhel75_template_name: "rhel 7 light"
+vcenter_server: 192.168.8.240
+vcenter_user: bradley.tsang@vsphere.local
+vcenter_pass: c7My$9Xa
+folder: "/SYSTEX HK/vm/Virtual Machines/RedHat Team/Bradley Tsang/Ansible/vm_clone" 
+datacenter: "SYSTEX HK"
+network: "VM Lab Network (subnet 192.168.128.0/17)"
+networkmask: 255.255.128.0
+gateway: 192.168.128.1
+esxi_hostname: 192.168.128.105 
+dns_server: 8.8.8.8
+serverlist: 
+ - vm_name: test1
+   vm_ip: 192.168.141.28
+ - vm_name: test2
+   vm_ip: 192.168.141.29
+ - vm_name: test3
+   vm_ip: 192.168.141.30

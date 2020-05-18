@@ -1,0 +1,5 @@
+1 Check file server can access ( e.g \\server1\xxxx can access from other server)
+2 Check the web url can access from other (https://server.xxx.local)
+3 compare number of service up before and after
+4 port is open( e.g teleent port 25)
+5 send/receive email 

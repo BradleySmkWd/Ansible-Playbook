@@ -1,0 +1,15 @@
+---
+- name: send email
+  hosts: all
+  tasks:
+  - name: Sending an e-mail using Gmail SMTP servers
+    mail:
+      host: systex.com.hk 
+      port: 587
+      from: "Red Hat Tower"
+      username: bradley.tsang
+      password: a02017500
+      to: Bradley Tsang <bradley.tsang@systex.com.hk>
+      subject: Ansible-report
+      body: System {{ ansible_hostname }} has been successfully provisioned
+    delegate_to: localhost

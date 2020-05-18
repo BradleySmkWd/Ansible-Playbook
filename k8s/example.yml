@@ -1,0 +1,55 @@
+---
+- hosts: localhost
+  gather_facts: false
+  connection: local
+
+  collections:
+    - community.kubernetes
+
+  tasks:
+    - name: Try to login to OCP cluster
+      k8s_auth:
+        host: https://api.ocp4.systex4.local:6443
+        username: kubeadmin
+        password: fzfuA-R3Rxu-FswtC-RavuL
+        validate_certs: no
+      register: k8s_auth_result
+
+    - name: Ensure the myapp Namespace exists.
+      k8s:
+        state: present
+        namespace: bradtest
+        host: https://api.ocp4.systex4.local:6443
+        username: kubeadmin
+        api_key: "{{ k8s_auth_result.k8s_auth.api_key }}"
+        validate_certs: no
+        api_version: v1
+        kind: Namespace
+        name: hello-openshift
+
+    - name: Ensure the myapp Service exists in the myapp Namespace.
+      k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: myapp
+            namespace: myapp
+          spec:
+            type: LoadBalancer
+            ports:
+            - port: 8080
+              targetPort: 8080
+            selector:
+              app: myapp
+
+    - name: Get a list of all Services in the myapp namespace.
+      k8s_info:
+        kind: Service
+        namespace: myapp
+      register: myapp_services
+
+    - name: Display number of Services in the myapp namespace.
+      debug:
+        var: myapp_services.resources | count

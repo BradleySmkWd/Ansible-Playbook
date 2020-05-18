@@ -1,0 +1,20 @@
+---
+- name: Find folder path of an existing virtual machine
+  hosts: localhost
+  gather_facts: False
+  tasks:
+    - set_fact:
+        vm_name: "rhel 7 light"
+
+    - name: "Find folder for VM - {{ vm_name }}"
+      vmware_guest_find:
+        hostname: "192.168.8.240"
+        username: "bradley.tsang@vsphere.local"
+        password: "c7My$9Xa"
+        validate_certs: False
+        name: "{{ vm_name }}"
+      delegate_to: localhost
+      register: vm_facts
+    - name: print msg
+      debug:
+        msg: "{{vm_facts}}"

@@ -1,0 +1,12 @@
+- hosts: localhost
+  tasks:
+  - name: Try to login to OCP cluster
+    k8s_auth:
+      host: https://api.ocp4.systex4.local:6443
+      username: kubeadmin
+      password: fzfuA-R3Rxu-FswtC-RavuL
+      validate_certs: no
+    register: k8s_auth_result
+
+
+

@@ -1,0 +1,6 @@
+---
+- name: call win shell script
+  hosts: all
+  tasks: 
+   - name: execute scripts to show number of service
+     win_shell: C:\demo\shownumber.ps1 >> C:\demo\numservice.txt

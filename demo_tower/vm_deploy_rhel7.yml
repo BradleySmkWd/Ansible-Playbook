@@ -1,0 +1,25 @@
+---
+- name: Guest Creation
+  gather_facts: no
+  vars_files:
+    - vm_vcenter_vars_en.yml
+  hosts: localhost
+  tasks:
+    - name: Clone a virtual machine "{{ item.vm_name }}" from existing template "{{ rhel75_template_name }}"
+      vmware_guest:
+        name: "{{ item.vm_name }}"
+        template: "{{ rhel75_template_name }}"
+        hostname: "{{ vcenter_server }}"
+        username: "{{ vcenter_user }}"
+        password: "{{ vcenter_pass }}"
+        validate_certs: no
+        folder: "{{ folder }}"
+        datacenter: "{{ datacenter }}"
+        esxi_hostname: "{{ esxi_hostname }}"
+        customization:
+          dns_servers: "{{ dns_server }}"
+        wait_for_ip_address: yes
+      loop: "{{ serverlist }}"
+      delegate_to: localhost
+      register: vm_result
+ 

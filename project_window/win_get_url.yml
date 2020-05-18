@@ -1,0 +1,8 @@
+---
+- name: download file from webserver 
+  hosts: all
+  tasks:
+   - name: Download and place file in certain place
+     win_get_url:
+      url: http://192.168.141.12/index.htm
+      dest: C:\CHECKME\aaa.htm

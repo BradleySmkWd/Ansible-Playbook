@@ -1,0 +1,13 @@
+---
+el_dependencies:
+  - python-psycopg2
+  - python-setuptools
+  - libselinux-python
+  - setools-libs
+  - yum-utils
+  - sudo
+  - acl
+
+postgresql_packages:
+  - postgresql96-server
+  - postgresql96-contrib

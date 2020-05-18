@@ -1,0 +1,19 @@
+- hosts: localhost
+  tasks:
+  - name: Try to login to OCP cluster
+    k8s_auth:
+      host: https://api.ocp4.systex4.local:6443
+      username: kubeadmin
+      password: fzfuA-R3Rxu-FswtC-RavuL
+      validate_certs: no
+    register: k8s_auth_result
+
+  - name: deploy hello-world pod
+    k8s:
+      state: present
+      namespace: myproject
+      host: https://api.ocp4.systex4.local:6443
+      username: kubeadmin
+      api_key: "{{ k8s_auth_result.k8s_auth.api_key }}"
+      validate_certs: no
+      src: /root/k8s/deployment.yml

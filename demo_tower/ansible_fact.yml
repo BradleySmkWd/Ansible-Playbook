@@ -1,0 +1,15 @@
+---
+- name: gather facts
+  hosts: all
+  gather_facts: yes
+  tasks:
+   - name: show
+     debug:
+       msg: 
+       - 1. Show the boot image - {{ansible_facts['cmdline']['BOOT_IMAGE']}}
+       - 3. Show uptime - {{ansible_uptime_seconds}}
+       - 4. Show date & time - {{ansible_date_time['tz_offset']}} 
+   - name: Check disk usage
+     debug:
+       msg: "Mount Point {{item.mount}} is at {{item.block_used/item.block_total*100}} percent "
+     loop: "{{ansible_mounts}}"

@@ -1,0 +1,11 @@
+---
+- name: gather facts
+  hosts: all
+  gather_facts: yes
+
+- name: Read device information (always use unit when probing)
+  hosts: all
+  tasks:
+  - name: Output disk information
+    debug:
+      var: "{{ansible_facts['devices']['sda']['size']}}"

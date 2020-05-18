@@ -1,0 +1,15 @@
+#Please help to prepare the following health check playbook
+#
+#1) web page avaliability
+#- curl webserver
+#
+#2) network connection to server
+#- ping 
+#
+#3) network ports connection
+#if fail > trigger restart service playbook
+#
+#4) check space usage
+#may use facts to check sda
+#
+#Trigger the email notification to user by ansible tower

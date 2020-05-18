@@ -1,0 +1,144 @@
+---
+# tasks file for mongodb
+- name: Try to login to OCP cluster
+  k8s_auth:
+    host: https://api.ocp4.systex4.local:6443
+    username: kubeadmin
+    password: fzfuA-R3Rxu-FswtC-RavuL
+    validate_certs: no
+  register: k8s_auth_result
+- name: create mongodb deployment
+  k8s:
+    state: present
+    host: https://api.ocp4.systex4.local:6443
+    username: kubeadmin
+    api_key: "{{ k8s_auth_result.k8s_auth.api_key }}"
+    validate_certs: no
+    definition:
+      kind: Deployment
+      apiVersion: apps/v1
+      metadata:
+        name: "{{ k8s_name }}"
+        namespace: "{{ namespace }}"
+        labels:
+          template: mongodb-ephemeral-template
+      spec:
+        strategy:
+          type: Recreate
+          recreateParams:
+            timeoutSeconds: 600
+        replicas: 1
+        test: false
+        selector:
+          matchLabels:
+            name: mongodb
+        template:
+          metadata:
+            creationTimestamp:
+            labels:
+              name: mongodb
+          spec:
+            volumes:
+            - name: mongodb-data
+              emptyDir: {}
+            containers:
+            - name: mongodb
+              image: registry.access.redhat.com/rhscl/mongodb-36-rhel7:latest
+              ports:
+              - containerPort: 27017
+                protocol: TCP
+              env:
+              - name: MONGODB_USER
+                value: "{{ mongodb_user }}"
+              - name: MONGODB_PASSWORD
+                value: "{{ mongodb_password }}"
+              - name: MONGODB_DATABASE
+                value: "{{ mongodb_database }}"
+              - name: MONGODB_ADMIN_PASSWORD
+                value: "{{ mongodb_admin_password }}"
+              resources:
+                limits:
+                  memory: "{{ memory_limit }}"
+              volumeMounts:
+              - name: mongodb-data
+                mountPath: "/var/lib/mongodb/data"
+              livenessProbe:
+                tcpSocket:
+                  port: 27017
+                initialDelaySeconds: 30
+                timeoutSeconds: 1
+                periodSeconds: 10
+                successThreshold: 1
+                failureThreshold: 3
+              readinessProbe:
+                exec:
+                  command:
+                  - "/bin/sh"
+                  - "-i"
+                  - "-c"
+                  - mongo 127.0.0.1:27017/$MONGODB_DATABASE -u $MONGODB_USER -p $MONGODB_PASSWORD
+                    --eval="quit()"
+                initialDelaySeconds: 3
+                timeoutSeconds: 1
+                periodSeconds: 10
+                successThreshold: 1
+                failureThreshold: 3
+              terminationMessagePath: "/dev/termination-log"
+              imagePullPolicy: IfNotPresent
+              securityContext:
+                capabilities: {}
+                privileged: false
+            restartPolicy: Always
+            terminationGracePeriodSeconds: 30
+            dnsPolicy: ClusterFirst
+            securityContext: {}
+- name: create mongodb service
+  k8s:
+    state: present
+    host: https://api.ocp4.systex4.local:6443
+    username: kubeadmin
+    api_key: "{{ k8s_auth_result.k8s_auth.api_key }}"
+    validate_certs: no
+    definition:
+      kind: Service
+      apiVersion: v1
+      metadata:
+        name: mongodb
+        namespace: "{{ namespace }}"
+        creationTimestamp:
+        labels:
+          template: mongodb-ephemeral-template
+      spec:
+        ports:
+        - name: mongo
+          protocol: TCP
+          port: 27017
+          targetPort: 27017
+        selector:
+          name: mongodb
+        type: ClusterIP
+        sessionAffinity: None
+      status:
+        loadBalancer: {}
+
+- name: Scale deployment up, and extend timeout
+  k8s_scale:
+    host: https://api.ocp4.systex4.local:6443
+    username: kubeadmin
+    api_key: "{{ k8s_auth_result.k8s_auth.api_key }}"
+    api_version: apps/v1
+    namespace: mongodb
+    host: https://api.ocp4.systex4.local:6443
+    kind: Deployment
+    name: mongodb
+    replicas: 3
+    validate_certs: no
+    resource_version: "17139535"
+    wait: yes
+    wait_timeout:  60
+  register: scale_info
+
+- name: debug
+  debug:
+    msg: "{{scale_info}}"
+
