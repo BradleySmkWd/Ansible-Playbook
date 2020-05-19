@@ -1,0 +1,8 @@
+---
+- name: execute shell script
+  hosts: all
+  vars:
+   - replicas: 3
+  tasks:
+   - name: call script
+     command: ./root/scale_demo/scale_up.sh "{{replicas}}"
